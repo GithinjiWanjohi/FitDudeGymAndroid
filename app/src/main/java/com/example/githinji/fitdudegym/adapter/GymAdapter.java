@@ -29,7 +29,7 @@ public class GymAdapter extends RecyclerView.Adapter<GymAdapter.ViewHolder>{
             public ViewHolder(View v) {
                 super(v);
 
-                gymTitle = v.findViewById(R.id.gymName);
+                gymTitle = v.findViewById(R.id.gym_name);
                 latitude = v.findViewById(R.id.latitude);
                 longitude = v.findViewById(R.id.longitude);
                 opening_time = v.findViewById(R.id.opening_time);

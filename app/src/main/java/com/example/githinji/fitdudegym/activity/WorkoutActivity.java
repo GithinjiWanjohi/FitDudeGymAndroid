@@ -2,12 +2,12 @@ package com.example.githinji.fitdudegym.activity;
 
 import android.app.Dialog;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatSpinner;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
@@ -17,7 +17,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
@@ -34,25 +34,32 @@ import com.wdullaer.materialdatetimepicker.time.TimePickerDialog;
 
 import org.json.JSONObject;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.HashMap;
 
 public class WorkoutActivity extends AppCompatActivity {
 
+    private static final String TAG = WorkoutActivity.class.getSimpleName();
+
     //the URL to send json data
-    private static final String JSON_URL = "http://fitdude.herokuapp.com/workout/save";
+    private static final String JSON_URL = "http://fitdude.herokuapp.com/workout/save/";
+
+    Dialog dialog;
 
     private BottomNavigationView navigation;
 
     private Button spn_from_date, spn_from_time;
 
-    String userId, workoutType, reps, sets, location, date, time;
+    String userId, selectedWorkout, reps, sets, selectedLocation, selectedDate, selectedTime;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home2);
 
+        initToolbar();
         initComponent();
     }
 
@@ -84,8 +91,15 @@ public class WorkoutActivity extends AppCompatActivity {
         });
     }
 
+    private void initToolbar() {
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setTitle("Workouts");
+        getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+    }
+
     public void onNewWorkoutClicked(View view) {
-        final Dialog dialog = new Dialog(this);
+        dialog = new Dialog(this);
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE); // before
         dialog.setContentView(R.layout.dialog_workout);
         dialog.setCancelable(true);
@@ -102,24 +116,28 @@ public class WorkoutActivity extends AppCompatActivity {
         final EditText location = (EditText) dialog.findViewById(R.id.et_location);
         final AppCompatSpinner spnSets = dialog.findViewById(R.id.spn_sets);
 
+        selectedLocation = location.getText().toString();
 
         String[] workouts = getResources().getStringArray(R.array.workout_types);
         ArrayAdapter<String> array = new ArrayAdapter<>(this, R.layout.simple_spinner_item, workouts);
         array.setDropDownViewResource(R.layout.simple_spinner_dropdown_item);
         workoutType.setAdapter(array);
         workoutType.setSelection(0);
+        selectedWorkout = workoutType.getSelectedItem().toString();
 
         String[] repItems = getResources().getStringArray(R.array.gym_reps);
         ArrayAdapter<String> arrayReps = new ArrayAdapter<>(this, R.layout.simple_spinner_item, repItems);
         arrayReps.setDropDownViewResource(R.layout.simple_spinner_dropdown_item);
         spnReps.setAdapter(arrayReps);
         spnReps.setSelection(0);
+        reps = spnReps.getSelectedItem().toString();
 
         String[] setItems = getResources().getStringArray(R.array.gym_sets);
         ArrayAdapter<String> arraySets = new ArrayAdapter<>(this, R.layout.simple_spinner_item, setItems);
         arraySets.setDropDownViewResource(R.layout.simple_spinner_dropdown_item);
         spnSets.setAdapter(arrayReps);
         spnSets.setSelection(0);
+        sets = spnSets.getSelectedItem().toString();
 
         ((ImageButton) dialog.findViewById(R.id.bt_close)).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -130,16 +148,7 @@ public class WorkoutActivity extends AppCompatActivity {
         ((Button) dialog.findViewById(R.id.bt_save)).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                Event event = new Event();
-//                event.email = tv_email.getText().toString();
-//                event.name = et_name.getText().toString();
-//                event.location = et_location.getText().toString();
-//                event.from = spn_from_date.getText().toString() + " (" + spn_from_time.getText().toString() + ")";
-//                event.to = spn_to_date.getText().toString() + " (" + spn_to_time.getText().toString() + ")";
-//                event.is_allday = cb_allday.isChecked();
-//                event.timezone = spn_timezone.getSelectedItem().toString();
-//                displayDataResult(event);
-
+                registerWorkout();
                 dialog.dismiss();
             }
         });
@@ -174,6 +183,8 @@ public class WorkoutActivity extends AppCompatActivity {
                         calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
                         long date_ship_millis = calendar.getTimeInMillis();
                         spn_from_date.setText(Tools.getFormattedDateSimple(date_ship_millis));
+                        DateFormat dateFormat = new SimpleDateFormat("yyyy-dd-MM");
+                        selectedDate = dateFormat.format(date_ship_millis);
                     }
                 },
                 cur_calender.get(Calendar.YEAR),
@@ -194,61 +205,82 @@ public class WorkoutActivity extends AppCompatActivity {
         TimePickerDialog datePicker = TimePickerDialog.newInstance(new TimePickerDialog.OnTimeSetListener() {
             @Override
             public void onTimeSet(TimePickerDialog view, int hourOfDay, int minute, int second) {
+                selectedTime = hourOfDay + ":" + minute;
                 spn_from_time.setText(hourOfDay + " : " + minute);
             }
         }, cur_calender.get(Calendar.HOUR_OF_DAY), cur_calender.get(Calendar.MINUTE), true);
+
         //set dark light
         datePicker.setThemeDark(true);
         datePicker.setAccentColor(getResources().getColor(R.color.colorPrimary));
         datePicker.show(getFragmentManager(), "Timepickerdialog");
     }
 
-//    public void registerUser(){
+    public void registerWorkout(){
 //        //getting the progressbar
 //        final ProgressBar progressBar = (ProgressBar) findViewById(R.id.progressBar);
 //
-//        SharedPrefManager.getInstance(getApplicationContext());
+        userId = SharedPrefManager.getInstance(getApplicationContext()).getUser().getUserId().toString();
 //        //making the progressbar visible
 //        progressBar.setVisibility(View.VISIBLE);
-//
-//        StringRequest postRequest = new StringRequest(Request.Method.POST, JSON_URL,
-//                new Response.Listener<String>()
-//                {
-//                    @Override
-//                    public void onResponse(String response) {
-//                        // response
-//                        Log.d("Response", response);
-//                    }
-//                },
-//                new Response.ErrorListener()
-//                {
-//                    @Override
-//                    public void onErrorResponse(VolleyError error) {
-//                        // error
-//                        Log.d("Error.Response", error.toString());
-//                    }
-//                }
-//        ) {
-//            @Override
-//            public byte[] getBody() throws AuthFailureError {
-//                HashMap<String, String> params = new HashMap<String, String>();
-//                params.put("user_id", firstName);
-//                params.put("location", lastName);
-//                params.put("workout_type", email);
-//                params.put("reps", password);
-//                params.put("sets", password);
-//                params.put("date", password);
-//                params.put("time", password);
-//                return new JSONObject(params).toString().getBytes();
-//            }
-//
-//            @Override
-//            public String getBodyContentType() {
-//                return "application/json";
-//            }
-//        };
-//
-//        RequestQueue requestQueue = Volley.newRequestQueue(this);
-//        requestQueue.add(postRequest);
-//    }
+
+        StringRequest postRequest = new StringRequest(Request.Method.POST, JSON_URL,
+                new Response.Listener<String>()
+                {
+                    @Override
+                    public void onResponse(String response) {
+                        // response
+                        Log.d(TAG, response);
+                        dialog.dismiss();
+                        Toast.makeText(getApplicationContext(), R.string.workout_saved, Toast.LENGTH_LONG).show();
+                    }
+                },
+                new Response.ErrorListener()
+                {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        // error
+                        Log.d(TAG, error.toString());
+                        dialog.dismiss();
+                        Toast.makeText(getApplicationContext(), R.string.something_wrong_happened, Toast.LENGTH_LONG).show();
+                    }
+                }
+        ) {
+            @Override
+            public byte[] getBody() throws AuthFailureError {
+                HashMap<String, String> params = new HashMap<String, String>();
+                params.put("user_id", userId);
+                params.put("workout_type", selectedWorkout);
+                params.put("reps", reps);
+                params.put("sets", sets);
+                params.put("location", selectedLocation);
+                params.put("date", selectedTime);
+                params.put("time", selectedTime);
+                return new JSONObject(params).toString().getBytes();
+            }
+
+            @Override
+            public String getBodyContentType() {
+                return "application/json";
+            }
+        };
+
+        RequestQueue requestQueue = Volley.newRequestQueue(this);
+        requestQueue.add(postRequest);
+    }
+
+    public void onViewGymsButtonClicked(View view) {
+        Intent intent = new Intent(this, GymListActivity.class);
+        startActivity(intent);
+    }
+
+    public void onGymInstructorsClicked(View view) {
+        Intent intent = new Intent(this, InstructorListActivity.class);
+        startActivity(intent);
+    }
+
+    public void onWorkoutSessionsClicked(View view) {
+        Intent intent = new Intent(this, WorkoutListActivity.class);
+        startActivity(intent);
+    }
 }

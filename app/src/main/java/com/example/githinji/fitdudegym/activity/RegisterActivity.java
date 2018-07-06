@@ -125,4 +125,9 @@ public class RegisterActivity extends AppCompatActivity {
 
         return password.equals(confirmPassword);
     }
+
+    public void onSignInButtonClicked(View v){
+        Intent intent = new Intent(this, LoginActivity.class);
+        startActivity(intent);
+    }
 }

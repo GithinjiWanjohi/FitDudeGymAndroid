@@ -238,14 +238,14 @@ public class MapsActivity extends AppCompatActivity {
                                     mClusterManager.addItem(infoWindowItem);
 
                                 } catch (JSONException e) {
-                                    e.printStackTrace();
+                                    Log.d(TAG, e.getMessage());
                                     progressBar.setVisibility(View.INVISIBLE);
                                 }
 
                                 progressBar.setVisibility(View.INVISIBLE);
                             }
                         } catch (JSONException e) {
-                            e.printStackTrace();
+                            Log.d(TAG, e.getMessage());
                             progressBar.setVisibility(View.INVISIBLE);
                         }
 

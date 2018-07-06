@@ -14,6 +14,10 @@ public class SharedPrefManager {
     private static final String KEY_LASTNAME = "keylastname";
     private static final String KEY_EMAIL = "keyemail";
     private static final String KEY_ID = "keyid";
+    private static final String KEY_AGE = "N/A";
+    private static final String KEY_WEIGHT = "N/A";
+    private static final String KEY_GENDER = "N/A";
+    private static final String KEY_PREF_GYM = "N/A";
 
     private static SharedPrefManager mInstance;
     private static Context context;
@@ -38,6 +42,10 @@ public class SharedPrefManager {
         editor.putString(KEY_FIRSTNAME, user.getFirstName());
         editor.putString(KEY_LASTNAME, user.getLastName());
         editor.putString(KEY_EMAIL, user.getEmail());
+        editor.putString(KEY_GENDER, user.getGender());
+        editor.putString(KEY_AGE, user.getAge());
+        editor.putString(KEY_WEIGHT, user.getWeight());
+        editor.putString(KEY_PREF_GYM, user.getEmail());
         editor.apply();
     }
 
@@ -55,7 +63,7 @@ public class SharedPrefManager {
                 sharedPreferences.getString(KEY_FIRSTNAME, null),
                 sharedPreferences.getString(KEY_LASTNAME, null),
                 sharedPreferences.getString(KEY_EMAIL, null)
-        );
+                );
     }
 
     //this method will logout the user

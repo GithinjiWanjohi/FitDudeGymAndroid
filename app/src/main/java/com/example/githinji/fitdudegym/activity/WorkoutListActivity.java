@@ -1,105 +1,74 @@
 package com.example.githinji.fitdudegym.activity;
 
-import android.content.Intent;
-import android.support.design.widget.FloatingActionButton;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.text.TextUtils;
 import android.util.Log;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ProgressBar;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
-import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.githinji.fitdudegym.R;
+import com.example.githinji.fitdudegym.activity.InstructorListActivity;
+import com.example.githinji.fitdudegym.adapter.InstructorAdapter;
 import com.example.githinji.fitdudegym.adapter.WorkoutAdapter;
-import com.example.githinji.fitdudegym.model.User;
+import com.example.githinji.fitdudegym.model.Instructor;
 import com.example.githinji.fitdudegym.model.Workout;
 import com.example.githinji.fitdudegym.utils.SharedPrefManager;
-import com.example.githinji.fitdudegym.utils.Tools;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-public class ProfileActivity extends AppCompatActivity {
+public class WorkoutListActivity extends AppCompatActivity {
+
+    private static final String TAG = InstructorListActivity.class.getSimpleName();
 
     //the URL having the json data
-    private static final String JSON_URL = "http://fitdude.herokuapp.com/user/";
+    private static final String JSON_URL = "http://fitdude.herokuapp.com/user/workout/?user_id=";
 
-    private static final String TAG = ProfileActivity.class.getSimpleName();
+    //the gym list where we will store all the hero objects after parsing json
+    List<Workout> workouts;
 
-    private ActionBar actionBar;
-    private Toolbar toolbar;
-
-    SharedPrefManager sharedPrefManager;
-
-    TextView mTxtUserName, mTxtAge, mTxtGender, mTxtWeight, mTxtPrefGym;
-
-    String fullName, firstName, lastName, age, gender, weight, prefGym;
-
+    // RecyclerView object
+    RecyclerView recyclerView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_profile_drawer_image);
-        initToolbar();
-        registerUser();
-        initComponent();
+        setContentView(R.layout.activity_workout_list);
+        recyclerView = findViewById(R.id.workout_recycler_view);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-        FloatingActionButton fab = findViewById(R.id.fab_add);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Toast.makeText(getApplicationContext(), "TODO: Edit user dialog", Toast.LENGTH_LONG).show();
-            }
-        });
+        //initializing gym list
+        workouts = new ArrayList<>();
+
+        initToolbar();
+
+        //this method will fetch and parse the data
+        loadWorkoutsList();
     }
 
     private void initToolbar() {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar.setNavigationIcon(R.drawable.ic_arrow_back_24dp);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setTitle("View Profile");
-        getSupportActionBar().setDisplayHomeAsUpEnabled(false);
-        Tools.setSystemBarColor(this, R.color.orange_A700);
-    }
-
-    private void initComponent() {
-        mTxtUserName = findViewById(R.id.txt_user_name);
-        mTxtAge = findViewById(R.id.txt_age);
-        mTxtWeight = findViewById(R.id.txt_weight);
-        mTxtPrefGym = findViewById(R.id.txt_preferred_gym);
-        mTxtGender = findViewById(R.id.txt_gender);
-
-    }
-
-    public void setTextViews(){
-
-        mTxtUserName.setText(fullName);
-        mTxtAge.setText(age);
-        mTxtWeight.setText(weight);
-        mTxtGender.setText(gender);
-        mTxtPrefGym.setText(prefGym);
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_search_setting, menu);
-        return true;
+        getSupportActionBar().setTitle(R.string.workouts);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
 
     @Override
@@ -112,15 +81,18 @@ public class ProfileActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    public void registerUser(){
-
+    private void loadWorkoutsList() {
         //getting the progressbar
         final ProgressBar progressBar = (ProgressBar) findViewById(R.id.progressBar);
 
         //making the progressbar visible
         progressBar.setVisibility(View.VISIBLE);
 
-        StringRequest stringRequest = new StringRequest(Request.Method.GET, JSON_URL,
+        String userId = SharedPrefManager.getInstance(getApplicationContext()).getUser().getUserId().toString();
+
+        String userURL = JSON_URL + userId;
+
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, userURL,
                 new com.android.volley.Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
@@ -135,22 +107,24 @@ public class ProfileActivity extends AppCompatActivity {
                             for (int i = 0; i < response.length(); i++) {
                                 try {
                                     JSONObject jsonObject = heroArray.getJSONObject(i);
-                                    firstName = jsonObject.getString("first_name");
-                                    lastName = jsonObject.getString("last_name");
-//                                    email = jsonObject.getString("email");
-                                    age = jsonObject.getString("age");
-                                    weight = jsonObject.getString("weight");
-                                    gender = jsonObject.getString("user_id");
-                                    prefGym = jsonObject.getString("pref_gym");
+                                    String workoutType = jsonObject.getString("workout_type");
+                                    String location = jsonObject.getString("location");
+                                    String date = jsonObject.getString("date");
+                                    String time = jsonObject.getString("time");
+                                    String userID = jsonObject.getString("user_id");
+                                    String reps = jsonObject.getString("reps");
+                                    String sets = jsonObject.getString("sets");
 
-                                    User user = new User(firstName, lastName, age, weight, gender, prefGym);
+                                    Workout workout = new Workout(workoutType, location, date, time, userID, reps, sets);
 
+                                    workouts.add(workout);
                                 } catch (JSONException e) {
                                     Toast.makeText(getApplicationContext(), R.string.failed_to_get_data, Toast.LENGTH_LONG).show();
                                     Log.d(TAG, e.getMessage());
                                     progressBar.setVisibility(View.INVISIBLE);
                                 }
-                                setTextViews();
+                                //creating custom adapter object
+                                recyclerView.setAdapter(new WorkoutAdapter(workouts));
 
                                 progressBar.setVisibility(View.INVISIBLE);
                             }
@@ -181,6 +155,5 @@ public class ProfileActivity extends AppCompatActivity {
         };
         RequestQueue requestQueue = Volley.newRequestQueue(this);
         requestQueue.add(stringRequest);
-
     }
 }

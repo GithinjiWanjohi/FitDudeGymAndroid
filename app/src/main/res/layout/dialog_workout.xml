@@ -195,7 +195,7 @@
                     <Button
                         android:id="@+id/spn_from_time"
                         style="@style/Base.Widget.AppCompat.Spinner.Underlined"
-                        android:layout_width="0dp"
+                        android:layout_width="60dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:singleLine="true"

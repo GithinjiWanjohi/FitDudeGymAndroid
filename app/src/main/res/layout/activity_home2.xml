@@ -32,7 +32,8 @@
                 android:layout_height="wrap_content"
                 android:gravity="center"
                 android:orientation="vertical"
-                android:padding="@dimen/spacing_large">
+                android:padding="@dimen/spacing_large"
+                android:onClick="onWorkoutSessionsClicked">
 
                 <ImageView
                     android:layout_width="70dp"
@@ -80,7 +81,8 @@
                 android:layout_height="wrap_content"
                 android:gravity="center"
                 android:orientation="vertical"
-                android:padding="@dimen/spacing_large">
+                android:padding="@dimen/spacing_large"
+                android:onClick="onGymInstructorsClicked">
 
                 <ImageView
                     android:layout_width="70dp"
@@ -140,8 +142,8 @@
 
                 <ImageView
                     android:id="@+id/image_addWorkout"
-                    android:layout_width="80dp"
-                    android:layout_height="80dp"
+                    android:layout_width="70dp"
+                    android:layout_height="70dp"
                     android:tint="@color/grey_60"
                     app:srcCompat="@drawable/ic_workout_white_24dp" />
 
@@ -182,11 +184,12 @@
                 android:layout_height="wrap_content"
                 android:gravity="center"
                 android:orientation="vertical"
-                android:padding="@dimen/spacing_large">
+                android:padding="@dimen/spacing_large"
+                android:onClick="onViewGymsButtonClicked">
 
                 <ImageView
-                    android:layout_width="80dp"
-                    android:layout_height="80dp"
+                    android:layout_width="70dp"
+                    android:layout_height="70dp"
                     android:tint="@color/grey_60"
                     app:srcCompat="@drawable/ic_workout_white_24dp" />
 

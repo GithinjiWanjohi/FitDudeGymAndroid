@@ -18,7 +18,9 @@ import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.githinji.fitdudegym.R;
 import com.example.githinji.fitdudegym.adapter.GymAdapter;
+import com.example.githinji.fitdudegym.adapter.InstructorAdapter;
 import com.example.githinji.fitdudegym.model.Gym;
+import com.example.githinji.fitdudegym.model.Instructor;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -27,15 +29,15 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
-public class GymListActivity extends AppCompatActivity {
+public class InstructorListActivity extends AppCompatActivity {
 
-    private static final String TAG = GymListActivity.class.getSimpleName();
+    private static final String TAG = InstructorListActivity.class.getSimpleName();
 
     //the URL having the json data
-    private static final String JSON_URL = "http://fitdude.herokuapp.com/gym";
+    private static final String JSON_URL = "http://fitdude.herokuapp.com/instructor";
 
     //the gym list where we will store all the hero objects after parsing json
-    List<Gym> gymList;
+    List<Instructor> instructors;
 
     // RecyclerView object
     RecyclerView recyclerView;
@@ -43,25 +45,25 @@ public class GymListActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_gym_list);
+        setContentView(R.layout.activity_instructor_list);
 
-        recyclerView = findViewById(R.id.gym_recycler_view);
+        recyclerView = findViewById(R.id.instructor_recycler_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
         //initializing gym list
-        gymList = new ArrayList<>();
+        instructors = new ArrayList<>();
 
         initToolbar();
 
         //this method will fetch and parse the data
-        loadGymList();
+        loadInstructorList();
     }
 
     private void initToolbar() {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setNavigationIcon(R.drawable.ic_arrow_back_24dp);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setTitle(R.string.registered_gyms);
+        getSupportActionBar().setTitle(R.string.registered_instructors);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
 
@@ -75,7 +77,7 @@ public class GymListActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    private void loadGymList() {
+    private void loadInstructorList() {
         //getting the progressbar
         final ProgressBar progressBar = (ProgressBar) findViewById(R.id.progressBar);
 
@@ -97,27 +99,27 @@ public class GymListActivity extends AppCompatActivity {
                             for (int i = 0; i < response.length(); i++) {
                                 try {
                                     JSONObject jsonObject = heroArray.getJSONObject(i);
-                                    String gymName = jsonObject.getString("gym_name");
-                                    String latitude = jsonObject.getString("latitude");
-                                    String longitude = jsonObject.getString("longitude");
-                                    String openingTime = jsonObject.getString("opening_time");
-                                    String closingTime = jsonObject.getString("closing_time");
-                                    String rating = jsonObject.getString("rating");
+                                    String firstName = jsonObject.getString("first_name");
+                                    String lastName = jsonObject.getString("last_name");
+                                    String email = jsonObject.getString("email");
+                                    String gymID = jsonObject.getString("gym_no");
 
-                                    Gym gym = new Gym(gymName, latitude, longitude, openingTime, closingTime, rating);
+                                    Instructor inst = new Instructor(gymID, firstName, lastName, email);
 
-                                    gymList.add(gym);
+                                    instructors.add(inst);
                                 } catch (JSONException e) {
-                                    e.printStackTrace();
+                                    Toast.makeText(getApplicationContext(), "Failed to get data", Toast.LENGTH_LONG).show();
+                                    Log.d(TAG, e.getMessage());
                                     progressBar.setVisibility(View.INVISIBLE);
                                 }
                                 //creating custom adapter object
-                                recyclerView.setAdapter(new GymAdapter(gymList));
+                                recyclerView.setAdapter(new InstructorAdapter(instructors));
 
                                 progressBar.setVisibility(View.INVISIBLE);
                             }
                         } catch (JSONException e) {
-                            e.printStackTrace();
+                            Toast.makeText(getApplicationContext(), "Failed to get data", Toast.LENGTH_LONG).show();
+                            Log.d(TAG, e.getMessage());
                         }
 
                     }
@@ -125,6 +127,7 @@ public class GymListActivity extends AppCompatActivity {
             @Override
             public void onErrorResponse(VolleyError error) {
                 Log.e("Volley", error.toString());
+                Log.d(TAG, error.getMessage());
             }
         });
         RequestQueue requestQueue = Volley.newRequestQueue(this);

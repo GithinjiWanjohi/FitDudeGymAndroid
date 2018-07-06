@@ -5,19 +5,19 @@ public class Workout {
     private String location;
     private String date;
     private String time;
-    private Integer userID;
-    private Integer reps;
-    private Integer sets;
+    private String userID;
+    private String reps;
+    private String sets;
 
     public Workout(String workoutType, String location, String date, String time,
-                   Integer userID, Integer reps, Integer sets){
+                   String userID, String reps, String sets){
         this.workoutType = workoutType;
         this.location = location;
         this.date = date;
         this.time = time;
         this.userID = userID;
         this.reps = reps;
-        this.reps = reps;
+        this.sets = sets;
     }
 
     public String getWorkoutType() {
@@ -52,27 +52,27 @@ public class Workout {
         this.time = time;
     }
 
-    public Integer getUserID() {
+    public String getUserID() {
         return userID;
     }
 
-    public void setUserID(Integer userID) {
+    public void setUserID(String userID) {
         this.userID = userID;
     }
 
-    public Integer getReps() {
+    public String getReps() {
         return reps;
     }
 
-    public void setReps(Integer reps) {
+    public void setReps(String reps) {
         this.reps = reps;
     }
 
-    public Integer getSets() {
+    public String getSets() {
         return sets;
     }
 
-    public void setSets(Integer sets) {
+    public void setSets(String sets) {
         this.sets = sets;
     }
 }

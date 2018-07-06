@@ -57,13 +57,6 @@ public class LoginActivity extends AppCompatActivity {
 
         Tools.setSystemBarColor(this, R.color.grey_5);
         Tools.setSystemBarLight(this);
-
-        ((View) findViewById(R.id.forgot_password)).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(parent_view, "Forgot Password", Snackbar.LENGTH_SHORT).show();
-            }
-        });
     }
 
     public void onLoginButtonClicked(View view) {

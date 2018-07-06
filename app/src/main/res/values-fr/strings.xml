@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">FitDudeGym</string>
+    <string name="title_activity_maps">Carte</string>
+
+    <string name="navigation_drawer_open">Tiroir de navigation ouverte</string>
+    <string name="navigation_drawer_close">Tiroir de navigation rapprochée</string>
+    <string name="title_activity_maps2">Carte</string>
+    <string name="title_activity_user_profile">UserProfileActivity</string>
+    <string name="nav_header_desc">En-tête de navigation</string>
+    <string name="action_settings">Paramètres</string>
+    <string name="workout_sessions">Séances d’entraînement</string>
+    <string name="gym_instructors">Moniteurs de gym</string>
+    <string name="new_workout">Nouvelle séance d’entraînement</string>
+    <string name="view_gyms">Afficher gymnases</string>
+    <string name="save">ENREGISTRER</string>
+    <string name="workout_type">Type d’entraînement</string>
+    <string name="number_of_reps_sets">Nombre de Reps/jeux</string>
+    <string name="location">Emplacement</string>
+    <string name="date">Date</string>
+    <string name="pick_a_date">Choisir une date</string>
+    <string name="time">Temps</string>
+    <string name="reps">REPS</string>
+    <string name="sets">Ensembles de</string>
+    <string name="number_of_reps">Nombre de répétitions</string>
+    <string name="registered_instructors">Des instructeurs</string>
+    <string name="workouts">Séances d’entraînement</string>
+    <string name="failed_to_get_data">Impossible d’obtenir des données</string>
+    <string name="welcome_back">Bienvenue</string>
+    <string name="sign_in_to_continue">Connectez-vous continuer</string>
+    <string name="login">Ouverture de session</string>
+    <string name="forgot_password">Mot de passe oublié ?</string>
+    <string name="new_user">Nouvel utilisateur ?</string>
+    <string name="map">Carte</string>
+    <string name="workout">Séance d’entraînement</string>
+    <string name="profile">Voir le profil</string>
+    <string name="welcome">Bienvenue,</string>
+    <string name="we_d_love_to_know_you">Nous aimerions vous connaître</string>
+    <string name="first_name">Prénom</string>
+    <string name="surname">Nom de famille</string>
+    <string name="email">Messagerie</string>
+    <string name="password">Mot de passe</string>
+    <string name="confirm_password">Confirmer mot de passe</string>
+    <string name="sign_up">Inscrivez-vous</string>
+    <string name="already_registered">Déjà inscrit ?</string>
+    <string name="sign_in">Connexion</string>
+</resources>
